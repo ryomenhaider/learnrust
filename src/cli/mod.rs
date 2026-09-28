@@ -1,10 +1,10 @@
-use std::collections::HashMap;
-use std::io::{self, Write};
+mod utils;
+
 
 pub fn cli() {
     println!("===== SIMPLE TODO CLI =====");
 
-    let mut tasks: HashMap<String, String> = HashMap::new();
+    let mut tasks: Vec<utils::Task> = utils::_read().expect("Failed to load tasks file!");
 
     loop {
         println!("\n=====     OPTIONS     =====");
@@ -26,23 +26,11 @@ pub fn cli() {
 
         match choice {
             1 => {
-                let task = read_input("Task: ");
-
-                if task.is_empty() {
-                    println!("Task cannot be empty!");
-                    continue;
-                }
-
-                if tasks.contains_key(&task) {
-                    println!("\"{}\" already exists.", task);
-                } else {
-                    tasks.insert(task.clone(), String::from("incomplete"));
-                    println!("\"{}\" was added to your tasks.", task);
-                }
+                write(task);
             }
 
             2 => {
-                let task = read_input("Task to remove: ");
+                let task: String = read_input("Task to remove: ");
 
                 if tasks.remove(&task).is_some() {
                     println!("\"{}\" was deleted.", task);
@@ -106,18 +94,4 @@ pub fn cli() {
             }
         }
     }
-}
-
-
-fn read_input(message: &str) -> String {
-    let mut input = String::new();
-
-    print!("{}", message);
-    io::stdout().flush().expect("Failed to flush stdout");
-
-    io::stdin()
-        .read_line(&mut input)
-        .expect("Failed to read input");
-
-    input.trim().to_string()
 }
